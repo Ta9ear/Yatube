@@ -321,13 +321,13 @@ class FollowViewsTest(TestCase):
 
     def test_new_post_emerge_in_following_page(self):
         following_page = self.follower_client.get(self.FOLLOW_INDEX_REV)
-        following_posts = following_page.context['page_obj']
+        following_posts = following_page.context['page_obj'].object_list
         self.assertNotIn(self.post, following_posts)
         self.follower_client.get(self.FOLLOW_REV)
         following_page_after_following = (
             self.follower_client.get(self.FOLLOW_INDEX_REV)
         )
         following_posts_after_following = (
-            following_page_after_following.context['page_obj']
+            following_page_after_following.context['page_obj'].object_list
         )
         self.assertIn(self.post, following_posts_after_following)

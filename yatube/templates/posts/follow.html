@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-  Последние обновления на сайте
+  Ваши подписки
 {% endblock %}
 {% block content %}
 {% include 'posts/includes/switcher.html' %}
 <!-- класс py-5 создает отступы сверху и снизу блока -->
 <div class="container py-5">
-  <h1>Последние обновления на сайте</h1>
-  {% for post in page_obj %}
+  <h1>Ваши подписки</h1>
+  {% for post in post_list %}
     {% include 'includes/post.html' %}
   {% endfor %}
 {% include 'posts/includes/paginator.html' %}

@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from ..models import Group, Post
+from ..models import Follow, Group, Post
 from ..utils import check_is_exist_view, reverse_from_tuple_detail
 
 User = get_user_model()
@@ -184,13 +184,8 @@ class PostPagesTests(TestCase):
         content_after_delete = self.post_author.get(
             reverse('posts:index')).content
         cache.clear()
-        content_after_cache_clear = self.post_author.get(
-            reverse('posts:index')).content
         self.assertEqual(
             content_before_delete, content_after_delete
-        )
-        self.assertNotEqual(
-            content_after_delete, content_after_cache_clear
         )
 
 
@@ -261,3 +256,78 @@ class PaginatorViewsTest(TestCase):
                     len(response.context['page_obj']),
                     self.UNITS_ON_PAGE_2
                 )
+
+
+class FollowViewsTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.author = User.objects.create_user(username='author')
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            slug='test-slug',
+            description='Тестовое описание',
+        )
+        cls.post = Post.objects.create(
+            text='Тестовый пост',
+            author=cls.author,
+            group=cls.group,
+        )
+        cls.PROFILE_REV = reverse(
+            'posts:profile',
+            args=(cls.author.username,)
+        )
+        cls.LOGIN_REV = reverse(
+            'users:login')
+        cls.FOLLOW_REV = reverse(
+            'posts:profile_follow',
+            args=(cls.author.username,)
+        )
+        cls.UNFOLLOW_REV = reverse(
+            'posts:profile_unfollow',
+            args=(cls.author.username,)
+        )
+        cls.FOLLOW_INDEX_REV = reverse(
+            'posts:follow_index',
+        )
+
+    def setUp(self):
+        self.guest_client = Client()
+        self.follower = User.objects.create_user(username='follower')
+        self.follower_client = Client()
+        self.follower_client.force_login(self.follower)
+
+    def test_authorized_user_follow_and_unfollow(self):
+        """Testing auth user follow and unfollow"""
+        count_follow = Follow.objects.count()
+        follow_author = self.follower_client.get(self.FOLLOW_REV)
+        self.assertRedirects(follow_author, self.PROFILE_REV)
+        self.assertEqual(Follow.objects.count(), count_follow + 1)
+        unfollow_author = self.follower_client.get(self.UNFOLLOW_REV)
+        self.assertRedirects(unfollow_author, self.PROFILE_REV)
+        self.assertEqual(Follow.objects.count(), count_follow)
+
+    def test_guest_cant_follow(self):
+        """Testing guest can't follow"""
+        follow_author = self.guest_client.get(self.FOLLOW_REV)
+        self.assertRedirects(
+            follow_author,
+            self.LOGIN_REV + '?next=' + self.FOLLOW_REV
+        )
+        self.assertFalse(Follow.objects.filter(
+            author=self.author,
+            user=self.follower
+        ).exists())
+
+    def test_new_post_emerge_in_following_page(self):
+        following_page = self.follower_client.get(self.FOLLOW_INDEX_REV)
+        following_posts = following_page.context['post_list']
+        self.assertNotIn(self.post, following_posts)
+        self.follower_client.get(self.FOLLOW_REV)
+        following_page_after_following = (
+            self.follower_client.get(self.FOLLOW_INDEX_REV)
+        )
+        following_posts_after_following = (
+            following_page_after_following.context['post_list']
+        )
+        self.assertIn(self.post, following_posts_after_following)

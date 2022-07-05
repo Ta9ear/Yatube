@@ -181,5 +181,3 @@ class CommentCreateFormTests(TestCase):
         self.assertEqual(self.post.comments.count(), comment_count + 1)
         first_object = response.context['comments'][0]
         check_is_exist_form_comment(self, first_object, form_data)
-
-

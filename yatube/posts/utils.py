@@ -8,5 +8,3 @@ def paginate(posts_list, request):
     paginator = Paginator(posts_list, UNITS_ON_PAGE)
     page_number = request.GET.get('page')
     return paginator.get_page(page_number)
-
-

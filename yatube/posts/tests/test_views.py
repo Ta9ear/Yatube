@@ -10,7 +10,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from ..models import Follow, Group, Post
-from ..utils import check_is_exist_view, reverse_from_tuple_detail
+from .utils import check_is_exist_view, reverse_from_tuple_detail
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)

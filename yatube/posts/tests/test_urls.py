@@ -6,7 +6,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from ..models import Group, Post
-from ..utils import reverse_from_tuple_detail, reverse_from_tuple_edit
+from .utils import reverse_from_tuple_detail, reverse_from_tuple_edit
 
 User = get_user_model()
 

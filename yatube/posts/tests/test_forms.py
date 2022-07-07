@@ -9,7 +9,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from ..models import Comment, Group, Post
-from ..utils import check_is_exist_form_comment, check_is_exist_form_post
+from .utils import check_is_exist_form_comment, check_is_exist_form_post
 
 User = get_user_model()
 

@@ -134,7 +134,7 @@ def add_comment(request, post_id):
         'group',
     ), id=post_id)
     form = CommentForm(request.POST or None)
-    if form.is_valid():
+    if request.method == "POST" and form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
         comment.post = post
@@ -153,10 +153,10 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     following_author = get_object_or_404(User, username=username)
-    if Follow.objects.filter(
-            author=following_author,
-            user=request.user
-    ).exists() or request.user == following_author:
+    follow_obj = (
+        Follow.objects.filter(author=following_author, user=request.user)
+    )
+    if follow_obj.exists() or request.user == following_author:
         return redirect('posts:profile', username=username)
     Follow.objects.create(
         user=request.user,
@@ -168,13 +168,9 @@ def profile_follow(request, username):
 @login_required
 def profile_unfollow(request, username):
     following_author = get_object_or_404(User, username=username)
-    if Follow.objects.filter(
-            author=following_author,
-            user=request.user
-    ).exists():
-        Follow.objects.filter(
-            author=following_author,
-            user=request.user
-        ).delete()
-        return redirect('posts:profile', username=username)
+    follow_obj = (
+        Follow.objects.filter(author=following_author, user=request.user)
+    )
+    if follow_obj.exists():
+        follow_obj.delete()
     return redirect('posts:profile', username=username)

@@ -1,3 +1,50 @@
-# hw05_final
+# Yatube
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+## Описание
+Проект Yatube представляет из себя социальную сеть для обмена постами
+между пользователями серивиса. Реализована аутентификация и верификация по 
+почте. Есть возможность подписки на интересных авторов.
+
+
+## Установка
+
+### 1) Клонировать репозиторий и перейти в директорию с проктом через терминал:
+```
+git clone git@github.com:Ta9ear/Yatube.git
+```
+
+### 2) Cоздать и активировать виртуальное окружение:
+```
+python -m venv env
+```
+```
+source venv/bin/activate
+```
+
+### 3) Установить зависимости из файла requirements.txt:
+```
+python -m pip install --upgrade pip
+```
+```
+pip install -r requirements.txt
+```
+
+### 4)Выполнить миграции:
+```
+python manage.py migrate
+```
+
+
+### 5) Запустить проект:
+```
+python manage.py runserver
+```
+
+## Технологии
+* Python
+* Django
+* JWT
+* Djoser
+
+### Автор проекта: Хусаенов Тагир
+### Проект находится на стадии разработки
